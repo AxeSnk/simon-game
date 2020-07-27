@@ -1,4 +1,5 @@
 # simon
+[Play](https://axesnk.github.io/simon-game/)
 
 ## Project setup
 ```
