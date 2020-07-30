@@ -3,47 +3,29 @@
     <div
       v-for="item in itemPanel"
       :key="item.id"
-      :class="item.name"
+      :class="item.name + ' ' + (item.active ? 'active' : '')"
       @click.prevent="play(item.src)"
       class="panel"
     ></div>
     <div class="display">
+      <div class="round">{{round}}</div>
       <button class="btn-start" @click="start">Start</button>
     </div>
   </div>
 </template>
 
 <script>
+import { items } from "./items";
+
 export default {
   name: "Panel",
   components: {},
   data: () => ({
-    itemPanel: [
-      {
-        id: 1,
-        name: "top-panel-left",
-        src: require("../assets/1.mp3"),
-      },
-      {
-        id: 2,
-        name: "top-panel-right",
-        src: require("../assets/2.mp3"),
-      },
-      {
-        id: 3,
-        name: "bottom-panel-left",
-        src: require("../assets/3.mp3"),
-      },
-      {
-        id: 4,
-        name: "bottom-panel-right",
-        src: require("../assets/4.mp3"),
-      }
-    ],
+    itemPanel: items,
     sequence: [],
     copy: [],
     round: 0,
-    active: true,
+    active: false,
     difficulty: "normal",
   }),
   methods: {
@@ -55,8 +37,10 @@ export default {
       this.newRound();
     },
     newRound() {
+      ++this.round;
       this.sequence.push(this.randomNumber());
       this.copy = this.sequence.slice(0);
+      this.animate(this.sequence);
     },
     randomNumber() {
       return Math.floor(Math.random() * 4 + 1);
@@ -74,14 +58,33 @@ export default {
         this.endGame();
       }
     },
-    endGame() {
+    animate(sequence) {
+      let i = 0;
+      let audio = require(`../assets/${sequence[i]}.mp3`);
+      const that = this;
+      const interval = setInterval(() => {
+        that.play(audio);
+        that.lightUp(sequence[i]);
+
+        i++;
+        if (i >= sequence.length) {
+          clearInterval(interval);
+          that.activateSimonBoard();
+        }
+      }, 600);
     },
-    activateSimonBoard(e) {
-    },
+    endGame() {},
+    activateSimonBoard(e) {},
     play(audio) {
       const music = new Audio(audio);
       music.play();
     },
+    lightUp(id) {
+      this.itemPanel[id-1].active = true
+      let light = setTimeout(() => {
+        this.itemPanel[id-1].active = false
+      }, 300)
+    }
   },
 };
 </script>
@@ -132,6 +135,10 @@ export default {
 .panel:active {
   opacity: 1;
 }
+.panel.active {
+  opacity: 1;
+  box-shadow: inset 0 0 20px 5px cyan;
+}
 .top-panel,
 .bottom-panel {
   display: flex;
@@ -150,6 +157,7 @@ export default {
 }
 .display {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100px;
