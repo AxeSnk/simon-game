@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="simon">
-      <h1>Simon</h1>
+      <h1>Simon Says</h1>
 
       <Panel />
     </div>
@@ -24,5 +24,6 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
 }
 </style>
